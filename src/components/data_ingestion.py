@@ -19,7 +19,7 @@ class DataIngestion:
             logging.info("Entered the get_data_from_s3 method of Data ingestion class")
 
             self.blob.sync_folder_from_blob(
-                folder=self.data_ingestion_config.blob_data_folder,
+                folder=self.data_ingestion_config.data_path,
                 container_name=self.data_ingestion_config.container_name,
                 connection_string=self.data_ingestion_config.connection_string,
             )

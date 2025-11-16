@@ -15,7 +15,7 @@ class DataIngestionConfig:
 
         self.connection_string = CONNECTION_STRING
 
-        self.artifact_dir: str = os.path.join(ARTIFACT_DIR, TIMESTAMP)
+        self.artifact_dir: str = os.path.join(ARTIFACT_DIR)
 
         self.data_path: str = os.path.join(
             self.artifact_dir, "data_ingestion", self.blob_data_folder
@@ -52,10 +52,18 @@ class DataTransformationConfig:
             "shuffle": SHUFFLE,
             "pin_memory": PIN_MEMORY,
         }
-
+        
         self.artifact_dir: str = os.path.join(
-            ARTIFACT_DIR, TIMESTAMP, "data_transformation"
+            ARTIFACT_DIR,"data_transformation"
         )
+        self.data_path: str = os.path.join(
+            ARTIFACT_DIR, "data_ingestion","data\\data\\"
+        )
+
+        self.train_data_path: str = os.path.join(self.data_path, "train")
+
+        self.test_data_path: str = os.path.join(self.data_path, "test")
+
 
         self.train_transforms_file: str = os.path.join(
             self.artifact_dir, TRAIN_TRANSFORMS_FILE
