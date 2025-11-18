@@ -77,7 +77,7 @@ class DataTransformationConfig:
 @dataclass
 class ModelTrainerConfig:
     def __init__(self):
-        self.artifact_dir: int = os.path.join(ARTIFACT_DIR, TIMESTAMP, "model_training")
+        self.artifact_dir: int = os.path.join(ARTIFACT_DIR,  "model_training")
 
         self.trained_bentoml_model_name: str = "xray_model"
 
@@ -118,8 +118,10 @@ class ModelPusherConfig:
     def __init__(self):
         self.bentoml_model_name: str = BENTOML_MODEL_NAME
 
+        self.azure_acr_name = AZURE_ACR_NAME
+
         self.bentoml_service_name: str = BENTOML_SERVICE_NAME
 
         self.train_transforms_key: str = TRAIN_TRANSFORMS_KEY
 
-        self.bentoml_ecr_image: str = BENTOML_ECR_IMAGE
+        self.bentoml_ecr_image: str = BENTOML_ACR_IMAGE
