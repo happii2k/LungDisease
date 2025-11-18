@@ -121,31 +121,35 @@ class ModelTrainer:
             logging.info(
                 "Entered the initiate_model_trainer method of Model trainer class"
             )
+            if "model.pt" not in self.model_trainer_config.trained_model_path:
 
-            model : Module = self.model.to(self.model_trainer_config.device)
 
-            optimizer : Optimizer = torch.optim.SGD(
-                model.parameters() , **self.model_trainer_config.optimizer_params
-            )
+                model : Module = self.model.to(self.model_trainer_config.device)
 
-            scheduler : _LRScheduler = StepLR(
-                optimizer=optimizer , **self.model_trainer_config.scheduler_params
-            )
+                optimizer : Optimizer = torch.optim.SGD(
+                    model.parameters() , **self.model_trainer_config.optimizer_params
+                )
 
-            for epoch in range(1 , self.model_trainer_config.epochs):
-                print("Epoch : " , epoch)
+                scheduler : _LRScheduler = StepLR(
+                    optimizer=optimizer , **self.model_trainer_config.scheduler_params
+                )
 
-                self.train(optimizer=optimizer)
+                for epoch in range(1 , self.model_trainer_config.epochs):
+                    print("Epoch : " , epoch)
 
-                optimizer.step()
+                    self.train(optimizer=optimizer)
 
-                scheduler.step()
-                self.test()
+                    optimizer.step()
 
+                    scheduler.step()
+                    self.test()
+
+                
+                os.makedirs(self.model_trainer_config.artifact_dir , exist_ok=True)
+
+                torch.save(model , self.model_trainer_config.trained_model_path)
             
-            os.makedirs(self.model_trainer_config.artifact_dir , exist_ok=True)
-
-            torch.save(model , self.model_trainer_config.trained_model_path)
+            model = torch.load(self.model_trainer_config.trained_model_path , weights_only=False)
 
             train_transform_obj = joblib.load(
                 self.data_transformation_artifact.train_transform_file_path

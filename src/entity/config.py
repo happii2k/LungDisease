@@ -57,7 +57,7 @@ class DataTransformationConfig:
             ARTIFACT_DIR,"data_transformation"
         )
         self.data_path: str = os.path.join(
-            ARTIFACT_DIR, "data_ingestion","data\\data\\"
+            ARTIFACT_DIR, "data_ingestion","data/data"
         )
 
         self.train_data_path: str = os.path.join(self.data_path, "train")

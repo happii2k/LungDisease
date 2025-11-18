@@ -37,7 +37,7 @@ class LungDiseaseService:
     def __init__(self):
         # Use .path property to get the directory path as a string
         model_dir = self.bento_model.path
-        model_file = model_dir + r"\saved_model.pt"  # or "model.pth"
+        model_file = model_dir + "/saved_model.pt"  # or "model.pth"
         
         # Load PyTorch model using string path
         self.model = torch.load(str(model_file), weights_only=False)
