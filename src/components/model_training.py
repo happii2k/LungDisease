@@ -121,57 +121,69 @@ class ModelTrainer:
             logging.info(
                 "Entered the initiate_model_trainer method of Model trainer class"
             )
-            if "model.pt" not in self.model_trainer_config.trained_model_path:
-
-
-                model : Module = self.model.to(self.model_trainer_config.device)
-
-                optimizer : Optimizer = torch.optim.SGD(
-                    model.parameters() , **self.model_trainer_config.optimizer_params
-                )
-
-                scheduler : _LRScheduler = StepLR(
-                    optimizer=optimizer , **self.model_trainer_config.scheduler_params
-                )
-
-                for epoch in range(1 , self.model_trainer_config.epochs):
-                    print("Epoch : " , epoch)
-
-                    self.train(optimizer=optimizer)
-
-                    optimizer.step()
-
-                    scheduler.step()
-                    self.test()
-
-                
-                os.makedirs(self.model_trainer_config.artifact_dir , exist_ok=True)
-
-                torch.save(model , self.model_trainer_config.trained_model_path)
             
-            model = torch.load(self.model_trainer_config.trained_model_path , weights_only=False)
-
+            # Check if model file already exists - skip training if it does
+            if os.path.exists(self.model_trainer_config.trained_model_path):
+                logging.info(f"Model file already exists at {self.model_trainer_config.trained_model_path}. Skipping training.")
+                model = torch.load(
+                    self.model_trainer_config.trained_model_path, 
+                    weights_only=False
+                )
+            else:
+                # Train the model since it doesn't exist
+                logging.info("Model file not found. Starting training...")
+                
+                model: Module = self.model.to(self.model_trainer_config.device)
+                
+                optimizer: Optimizer = torch.optim.SGD(
+                    model.parameters(), **self.model_trainer_config.optimizer_params
+                )
+                
+                scheduler: _LRScheduler = StepLR(
+                    optimizer=optimizer, **self.model_trainer_config.scheduler_params
+                )
+                
+                # Fixed epoch range to include all epochs
+                for epoch in range(1, self.model_trainer_config.epochs + 1):
+                    print("Epoch:", epoch)
+                    
+                    # Train method should handle batch loop with optimizer steps
+                    self.train(optimizer=optimizer)
+                    
+                    # Scheduler steps once per epoch AFTER all batches
+                    scheduler.step()
+                    
+                    # Evaluate on test set
+                    self.test()
+                
+                # Save the trained model
+                os.makedirs(self.model_trainer_config.artifact_dir, exist_ok=True)
+                torch.save(model, self.model_trainer_config.trained_model_path)
+                logging.info(f"Model saved to {self.model_trainer_config.trained_model_path}")
+            
+            # Load transformation object
             train_transform_obj = joblib.load(
                 self.data_transformation_artifact.train_transform_file_path
             )
-
+            
+            # Save to BentoML
             bentoml.pytorch.save_model(
-                name = "x_ray_model" , 
-                model = model , 
-                custom_objects={
-                    "transform" : train_transform_obj
-                }
+                name="x_ray_model",
+                model=model,
+                custom_objects={"transform": train_transform_obj}
             )
-
-            model_trainer_artifact : ModelTrainerArtifact = ModelTrainerArtifact(
+            logging.info("Model saved to BentoML successfully")
+            
+            model_trainer_artifact: ModelTrainerArtifact = ModelTrainerArtifact(
                 trained_model_path=self.model_trainer_config.trained_model_path
             )
+            
             logging.info(
                 "Exited the initiate_model_trainer method of Model trainer class"
             )
-
+            
             return model_trainer_artifact
-
+                
         except Exception as e:
             raise XRayException(e, sys)
 
