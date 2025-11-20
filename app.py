@@ -7,18 +7,15 @@ from src.dl.CustomNN import Net
 from src.constant import PREDICTION_LABEL
 import torchvision.transforms as transforms
 from PIL import Image
-from fastapi import FastAPI, UploadFile, File, HTTPException, Header, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Header, Depends , Request
+from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import time
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from src.logger import logging
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 # Add custom model to safe globals for PyTorch 2.6+
 torch.serialization.add_safe_globals([Net])
@@ -29,6 +26,11 @@ app = FastAPI(
     description="API for predicting lung diseases from X-ray images",
     version="1.0.0"
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Setup templates
+templates = Jinja2Templates(directory="templates")
 
 # Add CORS middleware
 app.add_middleware(
@@ -41,7 +43,7 @@ app.add_middleware(
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-logger.info(f"Using device: {device}")
+logging.info(f"Using device: {device}")
 
 # File size limit (10MB)
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -55,18 +57,18 @@ ALLOWED_FORMATS = {"image/jpeg", "image/jpg", "image/png"}
 
 # Initialize and load model
 try:
-    logger.info("Loading model...")
+    logging.info("Loading model...")
     model = Net().to(device)
     model = torch.load(
-            r"artifacts\model_training\model.pt",
+            "artifacts/model_training/model.pt",
             map_location=device,
             weights_only=False
         )
     
     model.eval()
-    logger.info("Model loaded successfully")
+    logging.info("Model loaded successfully")
 except Exception as e:
-    logger.error(f"Failed to load model: {str(e)}", exc_info=True)
+    logging.error(f"Failed to load model: {str(e)}", exc_info=True)
     raise
 
 
@@ -94,24 +96,11 @@ async def root():
         }
     }
 
+@app.get("/predict", response_class=HTMLResponse)
+async def predict_page(request: Request):
+    """Render the prediction page"""
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    try:
-        # Test model is loaded
-        if model is None:
-            raise Exception("Model not loaded")
-        
-        return {
-            "status": "healthy",
-            "model": "loaded",
-            "device": str(device),
-            "timestamp": time.time()
-        }
-    except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
-        raise HTTPException(status_code=503, detail="Service unhealthy")
 
 
 @app.post("/predict")
@@ -132,13 +121,13 @@ async def predict(
     try:
         # Validate file type
         if file.content_type not in ALLOWED_FORMATS:
-            logger.warning(f"Invalid file type: {file.content_type}")
+            logging.warning(f"Invalid file type: {file.content_type}")
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid file type. Allowed: {', '.join(ALLOWED_FORMATS)}"
             )
         
-        logger.info(f"Processing file: {file.filename}, type: {file.content_type}")
+        logging.info(f"Processing file: {file.filename}, type: {file.content_type}")
         
         # Read and validate image
         contents = await file.read()
@@ -148,14 +137,14 @@ async def predict(
         
         try:
             image = Image.open(io.BytesIO(contents)).convert("RGB")
-            logger.info(f"Image loaded successfully. Size: {image.size}")
+            logging.info(f"Image loaded successfully. Size: {image.size}")
         except Exception as e:
-            logger.error(f"Failed to open image: {str(e)}")
+            logging.error(f"Failed to open image: {str(e)}")
             raise HTTPException(status_code=400, detail="Invalid image file")
         
         # Transform image
         input_tensor = transform(image).unsqueeze(0).to(device)
-        logger.debug(f"Input tensor shape: {input_tensor.shape}")
+        logging.debug(f"Input tensor shape: {input_tensor.shape}")
         
         # Run inference
         with torch.no_grad():
@@ -168,7 +157,7 @@ async def predict(
         
         processing_time = time.time() - start_time
         
-        logger.info(
+        logging.info(
             f"Prediction: {prediction_label} (index: {prediction_index}), "
             f"Confidence: {confidence:.4f}, Time: {processing_time:.3f}s"
         )
@@ -188,7 +177,7 @@ async def predict(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Prediction error: {str(e)}", exc_info=True)
+        logging.error(f"Prediction error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error during prediction: {str(e)}"
@@ -198,7 +187,7 @@ async def predict(
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     """Global exception handler for unhandled errors"""
-    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+    logging.error(f"Unhandled exception: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={
@@ -207,6 +196,27 @@ async def global_exception_handler(request, exc):
             "detail": str(exc)
         }
     )
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    try:
+        # Test model is loaded
+        if model is None:
+            raise Exception("Model not loaded")
+        
+        return {
+            "status": "healthy",
+            "model": "loaded",
+            "device": str(device),
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logging.error(f"Health check failed: {str(e)}")
+        raise HTTPException(status_code=503, detail="Service unhealthy")
+
+
 
 
 if __name__ == "__main__":

@@ -1,16 +1,14 @@
+import subprocess
+import sys
 
-import os
 def run():
-    command = ( [
-                "python -m venv .venv",
-
-                "source .venv/bin/activate",
-
-                "pip install -r requirements.txt",
-
-                "python train.py"
-                ])
-    for com in command:
-      os.system(com)
+    if sys.platform == "win32":
+        # Windows
+        cmd = 'source .venv/bin/activate && pip install -r requirements.txt && python train.py'
+        subprocess.call(cmd, shell=True)
+    else:
+        # Linux/Mac
+        cmd = 'source .venv/bin/activate && pip install -r requirements.txt && python train.py'
+        subprocess.call(cmd, shell=True, executable='/bin/bash')
 
 run()

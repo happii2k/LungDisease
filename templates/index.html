@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-ray Pneumonia Classifier</title>
+    <link rel="stylesheet" href="static\styles.css">
+   
+</head>
+<body>
+    <div class="container">
+        <h1>🩺 X-ray Pneumonia Classifier</h1>
+        <p class="subtitle">Upload a chest X-ray image to detect pneumonia</p>
+
+        <div for="fileInput" class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">Supported: JPG, JPEG, PNG</div>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div class="preview-container" id="previewContainer">
+            <img id="previewImage" class="preview-image" alt="Preview">
+        </div>
+
+        <button class="btn" id="classifyBtn" disabled>Classify X-ray</button>
+
+        <div class="loader" id="loader"></div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-label" id="resultLabel"></div>
+            <div class="result-confidence" id="resultConfidence"></div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="info-box">
+            <strong>Note:</strong> This is an AI-powered tool for educational purposes. 
+            Always consult healthcare professionals for medical diagnosis.
+        </div>
+    </div>
+     <script src="/static/scripts.js"></script>
+
+    
+</body>
+</html>
