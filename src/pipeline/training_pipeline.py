@@ -96,7 +96,7 @@ class TrainPipeline:
                 model_trainer_config=self.model_trainer_config,
             )
 
-            model_trainer_artifact = model_trainer.iniatiate_model_trainer()
+            model_trainer_artifact = model_trainer.initiate_model_trainer()
 
             logging.info("Exited the start_model_trainer method of TrainPipeline class")
 
