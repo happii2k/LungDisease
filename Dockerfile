@@ -13,7 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt \
 # Copy source code
 COPY src/ ./src/
 COPY app.py .
-COPY index.html .
+COPY templates/ ./templates/
+COPY static/ /static/
 
 # Copy the PRE-TRAINED model
 COPY artifacts/model_training/ ./artifacts/model_training/

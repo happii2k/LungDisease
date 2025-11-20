@@ -60,7 +60,7 @@ try:
     logging.info("Loading model...")
     model = Net().to(device)
     model = torch.load(
-            "artifacts/model_training/model.pt",
+            "artifacts/model_training/pneumonia_model.pt",
             map_location=device,
             weights_only=False
         )
