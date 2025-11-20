@@ -80,11 +80,10 @@ transform = transforms.Compose([
                         std=[0.229, 0.224, 0.225])
 ])
 
-
-@app.get("/")
-async def root():
-    """Root endpoint with API information"""
-    return {
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    """Root endpoint - Homepage"""
+    api_info = {
         "name": "Lung Disease X-Ray Classification API",
         "version": "1.0.0",
         "status": "running",
@@ -95,6 +94,8 @@ async def root():
             "docs": "/docs"
         }
     }
+    return templates.TemplateResponse("home.html", {"request": request, "api": api_info})
+
 
 @app.get("/predict", response_class=HTMLResponse)
 async def predict_page(request: Request):

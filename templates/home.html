@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ api.name }}</title>
+    <link rel="stylesheet" href="/static/home.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo">🩺</div>
+            <h1>{{ api.name }}</h1>
+            <p class="tagline">AI-Powered Medical Image Analysis</p>
+        </header>
+
+        <!-- Status Card -->
+        <div class="status-card">
+            <div class="status-indicator running"></div>
+            <div class="status-info">
+                <h3>API Status: <span class="status-text">{{ api.status|upper }}</span></h3>
+                <p>Version: <strong>{{ api.version }}</strong></p>
+                <p>Device: <strong>{{ api.device }}</strong></p>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3>Advanced AI Model</h3>
+                <p>Deep learning-powered classification for accurate lung disease detection</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast Processing</h3>
+                <p>Get results in seconds with optimized inference pipeline</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure API</h3>
+                <p>Token-based authentication and CORS protection enabled</p>
+            </div>
+        </div>
+
+        <!-- API Endpoints Section -->
+        <div class="endpoints-section">
+            <h2>📡 API Endpoints</h2>
+            <div class="endpoint-list">
+                <div class="endpoint-item">
+                    <span class="method post">POST</span>
+                    <a href="{{ api.endpoints.predict }}" class="endpoint-link">
+                        {{ api.endpoints.predict }}
+                    </a>
+                    <p class="endpoint-desc">Upload X-ray image for classification</p>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method get">GET</span>
+                    <a href="{{ api.endpoints.health }}" class="endpoint-link">
+                        {{ api.endpoints.health }}
+                    </a>
+                    <p class="endpoint-desc">Check API health status</p>
+                </div>
+                <div class="endpoint-item">
+                    <span class="method get">GET</span>
+                    <a href="{{ api.endpoints.docs }}" class="endpoint-link" target="_blank">
+                        {{ api.endpoints.docs }}
+                    </a>
+                    <p class="endpoint-desc">Interactive API documentation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Ready to Get Started?</h2>
+            <div class="cta-buttons">
+                <a href="/predict" class="btn btn-primary">Try Classifier</a>
+                <a href="/docs" class="btn btn-secondary" target="_blank">View Documentation</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>⚕️ For educational and research purposes only. Not for medical diagnosis.</p>
+            <p class="copyright">© 2025 Lung Disease Classification API</p>
+        </footer>
+    </div>
+</body>
+</html>
