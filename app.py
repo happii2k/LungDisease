@@ -59,12 +59,7 @@ ALLOWED_FORMATS = {"image/jpeg", "image/jpg", "image/png"}
 try:
     logging.info("Loading model...")
     model = Net().to(device)
-    model = torch.load(
-            "artifacts/model_training/pneumonia_model.pt",
-            map_location=device,
-            weights_only=False
-        )
-    
+    model.load_state_dict(torch.load('artifacts/model_training/xray_model.pth', map_location=torch.device('cpu')))
     model.eval()
     logging.info("Model loaded successfully")
 except Exception as e:
