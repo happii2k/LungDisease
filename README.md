@@ -48,7 +48,7 @@ text
 | **Development** | Python 3.12, Git, VS Code |
 
 ## 📁 Project Structure
-
+```
 LungDisease/
 ├── src/
 │ ├── components/ # Data ingestion, transformation, training
@@ -65,7 +65,7 @@ LungDisease/
 ├── Dockerfile # Container configuration
 ├── requirements.txt # Python dependencies
 └── README.md
-
+```
 text
 
 ## 🚀 Quick Start
