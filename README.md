@@ -21,7 +21,7 @@ This project implements a complete MLOps pipeline for medical image classificati
 - **Modular Architecture**: Clean, maintainable codebase following software engineering best practices
 
 ## 🏗️ Architecture
-
+```
 ┌─────────────────┐ ┌──────────────────┐ ┌─────────────────┐
 │ Data Layer │────▶│ Model Layer │────▶│ API Layer │
 │ (Ingestion & │ │ (Training & │ │ (FastAPI & │
@@ -33,7 +33,7 @@ This project implements a complete MLOps pipeline for medical image classificati
 │ Azure Cloud Deployment │
 │ (Azure Container Registry → Azure Container Instances) │
 └─────────────────────────────────────────────────────────────────┘
-
+```
 text
 
 ## 🛠️ Tech Stack
@@ -67,7 +67,7 @@ LungDisease/
 └── README.md
 ```
 text
-
+```
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -136,7 +136,7 @@ az container create
 --image lungdisease.azurecr.io/xray-classifier:latest
 --ports 8000
 --dns-name-label xray-classifier-app
-
+```
 text
 
 ## 📊 Model Architecture
@@ -154,7 +154,7 @@ Net(
 )
 
 text
-
+```
 ## 🔌 API Endpoints
 
 | Method | Endpoint | Description |
@@ -162,7 +162,7 @@ text
 | `GET` | `/` | Web interface for image upload |
 | `GET` | `/health` | Health check endpoint |
 | `POST` | `/predict` | Classify uploaded X-ray image |
-
+```
 ### Example API Request
 
 curl -X POST "http://localhost:8000/predict"
